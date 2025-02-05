@@ -1,0 +1,13 @@
+name: CI
+
+on: push
+
+jobs:
+  build:
+    name: "Build ${{ matrix.build_mode }}"
+    strategy:
+      matrix:
+        build_mode: ["", "-Drelease-fast", "-Drelease-safe", "-Drelease-small"]
+    runs-on: ubuntu-latest
+    container:
+      image: samtebbs33:bram
