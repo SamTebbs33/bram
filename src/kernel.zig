@@ -1,1 +1,3 @@
-export fn kernel_main() callconv(.Naked) void {}
+export fn kernel_main() void {
+    return;
+}
