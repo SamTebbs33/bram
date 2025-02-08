@@ -3,11 +3,24 @@ name: CI
 on: push
 
 jobs:
-  build:
-    name: "Build ${{ matrix.build_mode }}"
-    strategy:
-      matrix:
-        build_mode: ["", "-Drelease-fast", "-Drelease-safe", "-Drelease-small"]
+  format:
+    name: "Check formatting"
     runs-on: ubuntu-latest
     container:
-      image: samtebbs33:bram
+      image: samtebbs33/bram
+    steps:
+    - uses: actions/checkout@v1
+    - name: Check formatting
+      run: zig fmt --check src
+  build:
+    name: "Build ${{matrix.build_mode}}"
+    strategy:
+      matrix:
+        build_mode: ["", "-Doptimize=ReleaseFast", "-Doptimize=ReleaseSafe", "-Doptimize=ReleaseSmall"]
+    runs-on: ubuntu-latest
+    container:
+      image: samtebbs33/bram
+    steps:
+    - uses: actions/checkout@v1
+    - name: Build
+      run: zig build ${{matrix.build_mode}}
