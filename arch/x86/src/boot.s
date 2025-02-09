@@ -19,7 +19,7 @@ forced to be within the first 8 KiB of the kernel file.
 .long FLAGS
 .long CHECKSUM
 .long 0, 0, 0, 0, 0
-.long 1
+.long 0
 .long 1024, 768, 32
 /*
 The multiboot standard does not define the value of the stack pointer register
@@ -87,6 +87,8 @@ _start:
 	stack since (pushed 0 bytes so far), so the alignment has thus been
 	preserved and the call is well defined.
 	*/
+	push %ebx
+	push %eax
 	call kernel_main
 
 	/*
