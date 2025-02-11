@@ -3,7 +3,8 @@ const std = @import("std");
 pub fn build(b: *std.Build) void {
     // Build is restricted to x86 (32bit) for simplicity for now; longer goals include
     // expanding this to aarch64 + x86_64.
-    const target = b.resolveTargetQuery(.{ .os_tag = .freestanding, .cpu_arch = .x86 });
+    const i386_cpu: std.Target.Query.CpuModel = .{ .explicit = &std.Target.x86.cpu.i386 };
+    const target = b.resolveTargetQuery(.{ .os_tag = .freestanding, .cpu_arch = .x86, .cpu_model = i386_cpu });
     // Assume aarch64 if not x86 for now, consider adding more in-depth parsing later.
     const archPath = if (target.result.cpu.arch == .x86) "x86" else "aarch64";
 
@@ -15,7 +16,7 @@ pub fn build(b: *std.Build) void {
     const multiheader = b.addAssembly(.{
         .name = "multiboot_hdr",
         .source_file = b.path(
-            b.pathJoin(&[_][]const u8{ "arch/", archPath, "/src/boot.s" }),
+            b.pathJoin(&[_][]const u8{ "src/arch/", archPath, "/src/boot.s" }),
         ),
         .target = target,
         .optimize = optimize,
@@ -30,7 +31,7 @@ pub fn build(b: *std.Build) void {
 
     kernel_main.addObject(multiheader);
 
-    kernel_main.setLinkerScript(b.path(b.pathJoin(&[_][]const u8{ "arch/", archPath, "src/linker.ld" })));
+    kernel_main.setLinkerScript(b.path(b.pathJoin(&[_][]const u8{ "src/arch/", archPath, "src/linker.ld" })));
 
     b.installArtifact(kernel_main);
 }
