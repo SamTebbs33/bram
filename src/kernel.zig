@@ -9,6 +9,7 @@ pub fn log(comptime level: std.log.level, comptime scope: @TypeOf(.EnumLiteral),
 
 export fn kernel_main() void {
     const arch_ifc = arch.get(builtin.cpu);
-    serial.init(arch_ifc);
+    if (!serial.init(&arch_ifc))
+        return;
     return;
 }

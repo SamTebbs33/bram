@@ -4,7 +4,7 @@ const Arch = @import("arch.zig").Arch;
 pub const Serial = struct {
     const This = @This();
     /// A function that takes a byte and writes it to the serial stream
-    pub const Write = fn (byte: u8) bool;
+    pub const Write = *const fn (u8) bool;
 
     /// The interface's writer
     writer: Write,
@@ -25,7 +25,7 @@ const LoggingError = error{};
 const Writer = std.io.Writer(void, LoggingError, logCallback);
 
 /// The architecture's serial interface, null if not initialised yet
-var serial: ?Serial = null;
+pub var serial: ?Serial = null;
 
 /// Write a format string to the serial interface
 fn log(comptime level: std.log.level, comptime format: []const u8, args: anytype) void {
@@ -42,7 +42,7 @@ fn logCallback(context: void, str: []const u8) usize {
 }
 
 pub fn init(arch: *const Arch) bool {
-    const result = arch.initSerial(&serial);
+    const result = arch.initSerial(arch);
     if (result.success)
         serial = result.serial orelse unreachable;
     return result.success;

@@ -2,12 +2,13 @@ const std = @import("std");
 const Serial = @import("serial.zig").Serial;
 
 pub const Arch = struct {
-    initSerial: fn (self: @This()) struct { success: bool, serial: ?Serial } = initSerialBase,
+    const SerialResult = struct { success: bool, serial: ?Serial };
+    initSerial: fn (self: *const @This()) SerialResult = initSerialBase,
 };
 
-pub fn initSerialBase(self: *Arch) struct { success: bool, serial: ?Serial } {
+pub fn initSerialBase(self: *const Arch) Arch.SerialResult {
     _ = self;
-    return .{ false, null };
+    return .{ .success = false, .serial = null };
 }
 
 pub fn get(cpu: std.Target.Cpu) Arch {
