@@ -1,10 +1,15 @@
 /* Declare constants for the multiboot header. */
-.set VIDINFO, 1<<2
+.set VIDINFO, 1<<2		/* provide video fields in the multiboot header */
 .set ALIGN,    1<<0             /* align loaded modules on page boundaries */
 .set MEMINFO,  1<<1             /* provide memory map */
 .set FLAGS,    ALIGN | MEMINFO | VIDINFO  /* this is the Multiboot 'flag' field */
 .set MAGIC,    0x1BADB002       /* 'magic number' lets bootloader find the header */
 .set CHECKSUM, -(MAGIC + FLAGS) /* checksum of above, to prove we are multiboot */
+.set MODE_TYPE, 0 /* mode_type field set to 0 requests linear graphics mode */
+.set WIDTH, 1024
+.set HEIGHT, 768
+.set DEPTH, 32 /* this is bits per pixel */
+
 
 /* 
 Declare a multiboot header that marks the program as a kernel. These are magic
@@ -18,9 +23,13 @@ forced to be within the first 8 KiB of the kernel file.
 .long MAGIC
 .long FLAGS
 .long CHECKSUM
+/*
+Unused padding for the address fields of the multiboot header
+so we can set the video fields.
+*/
 .long 0, 0, 0, 0, 0
-.long 0
-.long 1024, 768, 32
+.long 0 /* request linear graphics mode */
+.long 1024, 768, 32 /* width, height, depth requests */
 /*
 The multiboot standard does not define the value of the stack pointer register
 (esp) and it is up to the kernel to provide a stack. This allocates room for a

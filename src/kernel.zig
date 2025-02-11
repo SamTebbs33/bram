@@ -10,7 +10,7 @@ pub fn log(comptime level: std.log.level, comptime scope: @TypeOf(.EnumLiteral),
 }
 
 export fn kernel_main(magic: u32, multibootheader: *multiboot.MultibootInfo) void {
-    if (magic != 0x2BADB002) {
+    if (magic != multiboot.MAGIC) {
         return;
     }
 
