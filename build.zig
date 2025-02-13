@@ -3,8 +3,7 @@ const std = @import("std");
 pub fn build(b: *std.Build) void {
     // Build is restricted to x86 (32bit) for simplicity for now; longer goals include
     // expanding this to aarch64 + x86_64.
-    const i386_cpu: std.Target.Query.CpuModel = .{ .explicit = &std.Target.x86.cpu.i386 };
-    const target = b.resolveTargetQuery(.{ .os_tag = .freestanding, .cpu_arch = .x86, .cpu_model = i386_cpu });
+    const target = b.resolveTargetQuery(.{ .os_tag = .freestanding, .cpu_arch = .x86, .cpu_model = .{ .explicit = &std.Target.x86.cpu.i386 } });
     // Assume aarch64 if not x86 for now, consider adding more in-depth parsing later.
     const archPath = if (target.result.cpu.arch == .x86) "x86" else "aarch64";
 

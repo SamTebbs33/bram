@@ -15,6 +15,6 @@ export fn kernel_main() void {
     const serial_result = serial.init(&arch_ifc) catch |e| std.debug.panicExtra(@errorReturnTrace(), null, "Failed to initialise serial, that's not great: {}\n", .{e});
     if (!serial_result)
         return;
-    klog.debug("Hello, world!", .{});
+    klog.debug("Hello, world!\n", .{});
     return;
 }
