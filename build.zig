@@ -12,6 +12,9 @@ pub fn build(b: *std.Build) void {
     // set a preferred release mode, allowing the user to decide how to optimize.
     const optimize = b.standardOptimizeOption(.{});
 
+    //
+    //  Kernel compilation step
+    //
     const multiheader = b.addAssembly(.{
         .name = "multiboot_hdr",
         .source_file = b.path(
@@ -20,17 +23,25 @@ pub fn build(b: *std.Build) void {
         .target = target,
         .optimize = optimize,
     });
-
     const kernel_main = b.addExecutable(.{
         .name = "init_kernel",
         .root_source_file = b.path("src/kernel.zig"),
         .target = target,
         .optimize = optimize,
     });
-
     kernel_main.addObject(multiheader);
-
     kernel_main.setLinkerScript(b.path(b.pathJoin(&[_][]const u8{ "arch/", archPath, "src/linker.ld" })));
+    const make_kernel = b.addInstallArtifact(kernel_main, .{});
+    b.default_step.dependOn(&make_kernel.step);
 
-    b.installArtifact(kernel_main);
+    //
+    //  ELF file run step
+    //
+    const run_step = b.step("run-elf", "Run the elf directly with qemu");
+    const qemu_bin = switch (target.result.cpu.arch) {
+        .x86 => "qemu-system-i386",
+        else => unreachable,
+    };
+    const qemu_cmd = b.addSystemCommand(&[_][]const u8{ qemu_bin, "-kernel", b.getInstallPath(make_kernel.dest_dir.?, make_kernel.dest_sub_path) });
+    run_step.dependOn(&qemu_cmd.step);
 }
