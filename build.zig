@@ -3,9 +3,15 @@ const std = @import("std");
 pub fn build(b: *std.Build) void {
     // Build is restricted to x86 (32bit) for simplicity for now; longer goals include
     // expanding this to aarch64 + x86_64.
-    const target = b.resolveTargetQuery(.{ .os_tag = .freestanding, .cpu_arch = .x86 });
+    const x86: std.Target.Query = .{ .os_tag = .freestanding, .cpu_arch = .x86 };
+    const aarch64: std.Target.Query = .{ .os_tag = .freestanding, .cpu_arch = .aarch64 };
+    const target = b.standardTargetOptions(.{ .whitelist = &[_]std.Target.Query{ aarch64, x86 }, .default_target = x86 });
     // Assume aarch64 if not x86 for now, consider adding more in-depth parsing later.
-    const archPath = if (target.result.cpu.arch == .x86) "x86" else "aarch64";
+    const archPath = switch (target.result.cpu.arch) {
+        .x86 => "x86",
+        .aarch64 => "aarch64",
+        else => @panic("Unhandled target\n"),
+    };
 
     // Standard optimization options allow the person running `zig build` to select
     // between Debug, ReleaseSafe, ReleaseFast, and ReleaseSmall. Here we do not
