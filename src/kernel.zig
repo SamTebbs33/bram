@@ -3,7 +3,9 @@ const builtin = @import("builtin");
 const serial = @import("serial.zig");
 const arch = @import("arch.zig");
 
-pub fn log(comptime level: std.log.level, comptime scope: @TypeOf(.EnumLiteral), comptime format: []const u8, args: anytype) void {
+pub const std_options: std.Options = .{ .log_level = .debug, .logFn = log };
+
+pub fn log(comptime level: std.log.Level, comptime scope: @TypeOf(.enum_literal), comptime format: []const u8, args: anytype) void {
     serial.log(level, "(" ++ @tagName(scope) ++ "): " ++ format, args);
 }
 

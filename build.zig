@@ -12,23 +12,28 @@ pub fn build(b: *std.Build) void {
     // set a preferred release mode, allowing the user to decide how to optimize.
     const optimize = b.standardOptimizeOption(.{});
 
-    const multiheader = b.addAssembly(.{
-        .name = "multiboot_hdr",
-        .source_file = b.path(
-            b.pathJoin(&[_][]const u8{ "arch/", archPath, "/src/boot.s" }),
-        ),
+    const multiheader_module = b.createModule(.{
         .target = target,
         .optimize = optimize,
+    });
+    multiheader_module.addAssemblyFile(b.path(
+        b.pathJoin(&[_][]const u8{ "arch/", archPath, "/src/boot.s" }),
+    ));
+    const multiheader = b.addObject(.{
+        .name = "multiboot_hdr",
+        .root_module = multiheader_module,
     });
 
     const kernel_main = b.addExecutable(.{
-        .name = "init_kernel",
-        .root_source_file = b.path("src/kernel.zig"),
-        .target = target,
-        .optimize = optimize,
+        .name = "bram",
+        .root_module = b.createModule(.{
+            .root_source_file = b.path("src/kernel.zig"),
+            .target = target,
+            .optimize = optimize,
+        }),
     });
 
-    kernel_main.addObject(multiheader);
+    kernel_main.root_module.addObject(multiheader);
 
     kernel_main.setLinkerScript(b.path(b.pathJoin(&[_][]const u8{ "arch/", archPath, "src/linker.ld" })));
 
