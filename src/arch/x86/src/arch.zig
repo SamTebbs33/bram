@@ -4,7 +4,7 @@ const serial = @import("serial.zig");
 pub fn in(port: u16) u8 {
     return asm volatile ("inb %[port], %[res]"
         : [res] "={al}" (-> u8),
-        : [port] "N{dx}" (port),
+        : [port] "{dx}" (port),
     );
 }
 

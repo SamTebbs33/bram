@@ -12,7 +12,7 @@ pub fn log(comptime level: std.log.Level, comptime scope: @TypeOf(.enum_literal)
 
 export fn kernel_main() void {
     const arch_ifc = arch.get(builtin.cpu);
-    const serial_result = serial.init(&arch_ifc) catch |e| std.debug.panicExtra(@errorReturnTrace(), null, "Failed to initialise serial, that's not great: {}\n", .{e});
+    const serial_result = serial.init(&arch_ifc) catch |e| std.debug.panic("Failed to initialise serial, that's not great: {}\n", .{e});
     if (!serial_result)
         return;
     klog.debug("Hello, world!\n", .{});
