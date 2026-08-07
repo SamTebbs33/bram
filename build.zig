@@ -16,6 +16,7 @@ pub fn build(b: *std.Build) void {
         .root_source_file = b.path("src/kernel.zig"),
         .target = target,
         .optimize = optimize,
+        .code_model = .kernel,
     }) });
 
     kernel_main.root_module.addAssemblyFile(b.path(
