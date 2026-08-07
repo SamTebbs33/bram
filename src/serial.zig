@@ -42,7 +42,7 @@ fn logCallback(context: void, str: []const u8) usize {
 }
 
 pub fn init(arch: *const Arch) bool {
-    const result = arch.initSerial(arch);
+    const result = arch.initSerial();
     if (result.success)
         serial = result.serial orelse unreachable;
     return result.success;
