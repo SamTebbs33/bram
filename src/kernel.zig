@@ -22,7 +22,8 @@ export fn kernel_main(magic: u32, multibootheader: *multiboot.MultibootInfo) cal
 
     if (multibootheader.framebuffer_addr != 0 and multibootheader.framebuffer_pitch != 0 and multibootheader.framebuffer_bpp >= 24) {
         const screen: [*]u8 = @ptrFromInt(multibootheader.framebuffer_addr);
-        tty.write_hello_world(screen, multibootheader);
+        tty.init(screen, multibootheader);
+        tty.write_hello_world();
     }
 
     while (true) {}
